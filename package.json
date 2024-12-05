@@ -1,0 +1,12 @@
+{
+  "name": "superticktactoe",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A game of tick-tac-toe that with a engine.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
