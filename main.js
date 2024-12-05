@@ -3,15 +3,6 @@ const prompt = require("prompt-sync")({ sigint: true });
 
 var globalBoard = new fn.Board(true)
 var game = new fn.Game(globalBoard)
-globalBoard.setBoard(0,0,0,0,"X")
-globalBoard.setBoard(0,0,0,1,"O")
-globalBoard.setBoard(0,0,0,2,"X")
-globalBoard.setBoard(0,0,1,0,"O")
-globalBoard.setBoard(0,0,1,1,"X")
-globalBoard.setBoard(0,0,1,2,"O")
-globalBoard.setBoard(0,0,2,0,"O")
-globalBoard.setBoard(0,0,2,1,"X")
-globalBoard.setBoard(0,0,2,2,"O")
 globalBoard.drawBoard(globalBoard)
 
 startTwoPlayerTest()
