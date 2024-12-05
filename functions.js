@@ -97,6 +97,7 @@ class Board{
         }
 
     }
+    findLegalMoves
     #createArray(length) {
         var arr = new Array(length || 0),
             i = length;
@@ -122,6 +123,7 @@ class Board{
         else if(value == "O" || value == -1)translatedValue = -1
         this.board[y1][x1][y2][x2] = translatedValue
     }
+    
     /**
      * 
      * @param {int} x 
@@ -132,7 +134,8 @@ class Board{
         this.#updateWinningBoxes()
         if(x == -1){
             for(let j = -1 ; j <= 1; j+=2){
-                this.testForLineOnBoard(this.winningBoxes,j)
+                let findLines = this.testForLineOnBoard(this.winningBoxes,j)
+                if(findLines != 0)return findLines
             }
             let draw = true
             this.winningBoxes.forEach(element => {
@@ -237,7 +240,7 @@ class Computer{
         winningBoxes.forEach((row,y) =>{
             for(let x = 0;x<3;x++){
                 let square = row[x]
-                
+
                 if(square == undefined){
                     let hyp = [Array.from(inner[0]),Array.from(inner[1]),Array.from(inner[2])]
                     for(let i = -1 ; i <= 1; i+=2){
@@ -264,6 +267,7 @@ class Computer{
         let x2
         let y2
         console.log(this.evaluate())
+        let listOfMoves = this.gameBoard.findLegalMoves()
         if(this.game.nextBox[0] != -1){
             x1 = this.game.nextBox[0]
             y1 = this.game.nextBox[1]
