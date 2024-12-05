@@ -1,13 +1,42 @@
-import {Board,Game} from "./functions.js"
+const fn = require("./functions.js")
+const prompt = require("prompt-sync")({ sigint: true });
 
-var globalBoard = new Board(true)
-var game = new Game(globalBoard)
+var globalBoard = new fn.Board(true)
+var game = new fn.Game(globalBoard)
+globalBoard.setBoard(0,0,0,0,"X")
+globalBoard.setBoard(0,0,0,1,"O")
+globalBoard.setBoard(0,0,0,2,"X")
+globalBoard.setBoard(0,0,1,0,"O")
+globalBoard.setBoard(0,0,1,1,"X")
+globalBoard.setBoard(0,0,1,2,"O")
+globalBoard.setBoard(0,0,2,0,"O")
+globalBoard.setBoard(0,0,2,1,"X")
+globalBoard.setBoard(0,0,2,2,"O")
 globalBoard.drawBoard(globalBoard)
-let gameEnd = false
-console.log("Make moves in x1y1x2y2")
-game.makeMove(0,0,0,0)
-game.makeMove(0,0,1,1)
-// while(!gameEnd){
-//     let answer = prompt("Make a move as "+ game.turn)
 
-// }
+startTwoPlayerTest()
+function startTwoPlayerTest(){
+    let gameEnd = false
+    while(!gameEnd){
+        let answer = prompt("Make a move as "+game.turn+" > ")
+        if(answer == 'end'){
+            console.log("Force End")
+            gameEnd = true
+            continue
+        }
+        let move = answer.split("")
+        let i = 0
+        move.forEach(element => {
+            move[i] = parseInt(element)-1
+            if(move[i] > 2)move[5] = -1
+            i++
+        });
+        if(move.length != 4){
+            console.log("Your move should be 4 chars long and consist of only numbers 3, 2, and 1")
+            continue
+        }
+        if(game.makeMove(move[0],move[1],move[2],move[3])){
+            console.log("Game Ended By Victory")
+        }
+    }
+}
