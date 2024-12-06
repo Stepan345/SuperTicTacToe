@@ -189,6 +189,9 @@ class Computer{
         this.boardObject = game.gameBoard
         this.gameBoard = game.gameBoard.board
     }
+    findLegalMoves(){
+
+    }
     /**
      * 
      * @returns {float}The evaluation of the board state
@@ -204,13 +207,16 @@ class Computer{
         const oneAwayWinning = 500
         const WIN = 100000
         let evaluation = 0
-        let count = 0 
+        let pieceCountEvalX = 0
+        let pieceCountEvalO = 0
+        let countX = 0
+        let countO = 0 
         board.forEach((ROW,y1) => {
             ROW.forEach((inner,x1) => {
                 if(winningBoxes[y1][x1] != 0){
                     if(winningBoxes[y1][x1] != 2){
                         evaluation += winningBox*winningBoxes[y1][x1]
-                        console.log("Winning Box: ",winningBox)
+                        console.log("Winning Box: ",winningBox*winningBoxes[y1][x1])
                     }
                     return
                 }
@@ -218,9 +224,15 @@ class Computer{
                     for(let x = 0;x<3;x++){
                         let square = row[x]
                         //Piece count eval
-                        evaluation += weights[y][x]*(square == undefined?0:square)
                         if(square != undefined){
-                            count++
+                            if(square == 1){
+                                pieceCountEvalX += weights[y][x]
+                                countX++
+                            }else{
+                                pieceCountEvalO += weights[y][x]
+                                countO++
+                            }
+
                         }else{
                             //One away eval
                             let hyp = [Array.from(inner[0]),Array.from(inner[1]),Array.from(inner[2])]
@@ -231,12 +243,17 @@ class Computer{
                                 if(numberOfLines > 0)console.log("One Away: ",numberOfLines*i*oneAway)
                             }
                         }
-                        
-
                     }
+
                 })
             })
         })
+        pieceCountEvalX /= countX
+        pieceCountEvalO /= countO
+        let pieceCountEval = (pieceCountEvalX-pieceCountEvalO)
+        evaluation += pieceCountEval
+        console.log("Piece Count: ",pieceCountEvalX)
+        console.log("Piece Count: ",-pieceCountEvalO)
         winningBoxes.forEach((row,y) =>{
             for(let x = 0;x<3;x++){
                 let square = row[x]
@@ -259,7 +276,7 @@ class Computer{
             evaluation += numberOfLines*i*WIN
             if(numberOfLines > 0)console.log("Winner: ",numberOfLines*i*WIN)
         }
-        return evaluation/count
+        return evaluation
     }
     takeTurn(){
         let x1
@@ -267,7 +284,7 @@ class Computer{
         let x2
         let y2
         console.log(this.evaluate())
-        let listOfMoves = this.gameBoard.findLegalMoves()
+        let listOfMoves = this.findLegalMoves()
         if(this.game.nextBox[0] != -1){
             x1 = this.game.nextBox[0]
             y1 = this.game.nextBox[1]
