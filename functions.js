@@ -189,8 +189,16 @@ class Computer{
         this.boardObject = game.gameBoard
         this.gameBoard = game.gameBoard.board
     }
-    findLegalMoves(){
-
+    findLegalMoves(board,x1,y1){
+        let moves = []
+        for(let y = 0;y < 3;y++){
+            for(let x = 0;x < 3;x++){
+                if(board[y][x] == undefined || board[y][x] == 0){
+                    moves.push([x1,y1,x,y])
+                }
+            }
+        }
+        return moves
     }
     /**
      * 
@@ -257,7 +265,6 @@ class Computer{
         winningBoxes.forEach((row,y) =>{
             for(let x = 0;x<3;x++){
                 let square = row[x]
-
                 if(square == undefined){
                     let hyp = [Array.from(inner[0]),Array.from(inner[1]),Array.from(inner[2])]
                     for(let i = -1 ; i <= 1; i+=2){
@@ -278,25 +285,41 @@ class Computer{
         }
         return evaluation
     }
+    findBestMove(board,turn,nextBox,winningBoxes,moves){
+        let evaluation = evaluate(board,winningBoxes)
+        let allEvals = []
+        moves.forEach(move => {
+            let newBoard = []
+            let newWinningBoxes = []
+            board.forEach((ROW,r) => {
+                ROW.forEach((inner, i) =>{
+                    inner.forEach((row,x) => {
+                        newBoard[r][i][x] = Array.from(row)
+                    });
+                })
+            })
+            newBoard[move[1]][move[0]][move[3]][move[2]] = turn == "X" ? 1 : -1
+            
+            this.boardObject.testForLineOnBoard
+            allEvals.push([this.evaluate(newBoard,),])
+        });
+    }
     takeTurn(){
         let x1
         let y1
         let x2
         let y2
-        console.log(this.evaluate())
-        let listOfMoves = this.findLegalMoves()
+        let evaluation = this.evaluate()
+        let listOfMoves = []
         if(this.game.nextBox[0] != -1){
-            x1 = this.game.nextBox[0]
-            y1 = this.game.nextBox[1]
+            listOfMoves = this.findLegalMoves(this.gameBoard,this.game.nextBox[0],this.game.nextBox[1])
         }else{
-            let i = false
-            while(!i){
-                x1 = Math.floor(Math.random() * 3)
-                y1 = Math.floor(Math.random() * 3)
-                if(this.boardObject.winningBoxes[y1][x1] == 0)i = true
-            }
-            //console.log(x1,y1)
+            let avalableBoxes = this.findLegalMoves(this.boardObject.winningBoxes,0,0)
+            avalableBoxes.forEach((element) => {
+                listOfMoves.concat(this.findLegalMoves(this.gameBoard[element[3]][element[2]],element[2],element[3]))
+            })
         }
+
         let i = false
         while(!i){
             x2 = Math.floor(Math.random() * 3)
