@@ -8,8 +8,8 @@ globalBoard.drawBoard(globalBoard)
 
 
 //startTwoPlayerTest()
-//startOnePlayerTest()
-startNoPlayerTest()
+startOnePlayerTest()
+//startNoPlayerTest()
 function startTwoPlayerTest(){
     let gameEnd = false
     while(!gameEnd){

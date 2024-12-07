@@ -47,7 +47,7 @@ class Board{
     constructor(super3T = false){
         this.superBoard = super3T
         if(super3T){
-            this.board = this.#createArray(3,3,3,3)
+            this.board = this.createArray(3,3,3,3)
         }
         this.winningBoxes = [
             [0,0,0],
@@ -98,13 +98,13 @@ class Board{
 
     }
     findLegalMoves
-    #createArray(length) {
+    createArray(length) {
         var arr = new Array(length || 0),
             i = length;
     
         if (arguments.length > 1) {
             var args = Array.prototype.slice.call(arguments, 1);
-            while(i--) arr[length-1 - i] = this.#createArray.apply(this, args);
+            while(i--) arr[length-1 - i] = this.createArray.apply(this, args);
         }
     
         return arr;
@@ -183,6 +183,7 @@ class Board{
         }
     }
 }
+var TESTBranch = []
 class Computer{
     constructor(game) {
         this.game = game
@@ -196,6 +197,7 @@ class Computer{
                 if(board[y][x] == undefined || board[y][x] == 0){
                     moves.push([x1,y1,x,y])
                 }
+            
             }
         }
         return moves
@@ -204,7 +206,7 @@ class Computer{
      * 
      * @returns {float}The evaluation of the board state
      */
-    evaluate(board = this.gameBoard,winningBoxes = this.boardObject.winningBoxes){
+    evaluate(board = this.gameBoard,winningBoxes = this.boardObject.winningBoxes,shout = true){
         const weights = [
             [20,10,20],
             [10,40,10],
@@ -224,7 +226,7 @@ class Computer{
                 if(winningBoxes[y1][x1] != 0){
                     if(winningBoxes[y1][x1] != 2){
                         evaluation += winningBox*winningBoxes[y1][x1]
-                        console.log("Winning Box: ",winningBox*winningBoxes[y1][x1])
+                        if(shout)console.log("Winning Box: ",winningBox*winningBoxes[y1][x1])
                     }
                     return
                 }
@@ -248,7 +250,7 @@ class Computer{
                                 hyp[y][x] = i
                                 let numberOfLines = this.boardObject.testForLineOnBoard(hyp,i)
                                 evaluation += numberOfLines*i*oneAway
-                                if(numberOfLines > 0)console.log("One Away: ",numberOfLines*i*oneAway)
+                                if(shout)if(numberOfLines > 0)console.log("One Away: ",numberOfLines*i*oneAway)
                             }
                         }
                     }
@@ -256,22 +258,23 @@ class Computer{
                 })
             })
         })
-        pieceCountEvalX /= countX
-        pieceCountEvalO /= countO
+        if(countX != 0)pieceCountEvalX /= countX
+        if(countO != 0)pieceCountEvalO /= countO
         let pieceCountEval = (pieceCountEvalX-pieceCountEvalO)
         evaluation += pieceCountEval
-        console.log("Piece Count: ",pieceCountEvalX)
-        console.log("Piece Count: ",-pieceCountEvalO)
+        if(shout)console.log("Piece Count: ",pieceCountEvalX)
+        if(shout)console.log("Piece Count: ",-pieceCountEvalO)
+        if (!evaluation)evaluation = 0
         winningBoxes.forEach((row,y) =>{
             for(let x = 0;x<3;x++){
                 let square = row[x]
                 if(square == undefined){
-                    let hyp = [Array.from(inner[0]),Array.from(inner[1]),Array.from(inner[2])]
+                    let hyp = [Array.from(winningBoxes[0]),Array.from(winningBoxes[1]),Array.from(winningBoxes[2])]
                     for(let i = -1 ; i <= 1; i+=2){
                         hyp[y][x] = i
                         let numberOfLines = this.boardObject.testForLineOnBoard(hyp,i)
                         evaluation += numberOfLines*i*oneAwayWinning
-                        if(numberOfLines > 0)console.log("One Away From Winning: ",numberOfLines*i*oneAwayWinning)
+                        if(shout)if(numberOfLines > 0)console.log("One Away From Winning: ",numberOfLines*i*oneAwayWinning)
                     }
                 }
                 
@@ -281,15 +284,23 @@ class Computer{
         for(let i = -1 ; i <= 1; i+=2){
             let numberOfLines = this.boardObject.testForLineOnBoard(winningBoxes,i)
             evaluation += numberOfLines*i*WIN
-            if(numberOfLines > 0)console.log("Winner: ",numberOfLines*i*WIN)
+            if(shout)if(numberOfLines > 0)console.log("Winner: ",numberOfLines*i*WIN)
         }
+        if(shout)console.log("Final Position Evaluation: ",evaluation)
         return evaluation
     }
-    findBestMove(board,turn,nextBox,winningBoxes,moves){
-        let evaluation = evaluate(board,winningBoxes)
+    
+    findBestMove(board,turn,winningBoxes,moves,depth,alpha = 0,beta = 0 ){
+        let evaluation = this.evaluate(board,winningBoxes,false)
+        if(depth == 0){
+            //console.log(TESTBranch)
+            TESTBranch = []
+            return [evaluation,[-1,-1,-1,-1]]
+        }
         let allEvals = []
-        moves.forEach(move => {
-            let newBoard = []
+        for(let m = 0;m < moves.length;m++){
+            let move = moves[m]
+            let newBoard = this.boardObject.createArray(3,3,3,3)
             let newWinningBoxes = []
             board.forEach((ROW,r) => {
                 ROW.forEach((inner, i) =>{
@@ -299,37 +310,77 @@ class Computer{
                 })
             })
             newBoard[move[1]][move[0]][move[3]][move[2]] = turn == "X" ? 1 : -1
-            
-            this.boardObject.testForLineOnBoard
-            allEvals.push([this.evaluate(newBoard,),])
-        });
+            winningBoxes.forEach((row,i)=> {
+                newWinningBoxes[i] = Array.from(row)
+            });
+            let checkForWin = this.boardObject.testForLineOnBoard(newBoard[move[1]][move[0]],turn == "X" ? 1 : -1)
+            newWinningBoxes[move[1]][move[0]] = checkForWin > 0? (turn == "X" ? 1 : -1):0
+            let finEval = this.evaluate(newBoard,newWinningBoxes,false)
+            let newMoves = []
+
+            if(newWinningBoxes[move[3]][move[2]] != 0){
+                let avalableBoxes = this.findLegalMoves(newWinningBoxes,0,0)
+                for(let i = 0;i<avalableBoxes.length;i++){
+                    let element = avalableBoxes[i]
+                    let movesInBox = this.findLegalMoves(newBoard[element[3]][element[2]],element[2],element[3])
+                    for(let j = 0;j<movesInBox.length;j++){
+                        newMoves.push(movesInBox[j])
+                    }
+                }
+            }else{
+                newMoves = this.findLegalMoves(newBoard[move[3]][move[2]],move[2],move[3])
+            }
+            //TESTBranch.push([finEval,move,turn])
+            let node = this.findBestMove(newBoard,turn == "X" ? "O" : "X",newWinningBoxes,newMoves,depth-1)
+            //put alpha/beta here
+            if(node == undefined)node = [0,move]
+            allEvals.push([node[0],move])
+            //if(depth == 2)console.log(node)
+        }
+
+        
+        
+        
+        if(turn == "X"){
+            allEvals.sort((a,b)=>{
+                return b[0]-a[0]
+            })
+        }else{
+            allEvals.sort((a,b)=>{
+                return a[0]-b[0]
+            })
+        }
+        if(depth == 4)console.log(allEvals)
+        return allEvals[0]
     }
     takeTurn(){
         let x1
         let y1
         let x2
         let y2
-        let evaluation = this.evaluate()
         let listOfMoves = []
         if(this.game.nextBox[0] != -1){
-            listOfMoves = this.findLegalMoves(this.gameBoard,this.game.nextBox[0],this.game.nextBox[1])
+            listOfMoves = this.findLegalMoves(this.gameBoard[this.game.nextBox[1]][this.game.nextBox[0]],this.game.nextBox[0],this.game.nextBox[1])
         }else{
             let avalableBoxes = this.findLegalMoves(this.boardObject.winningBoxes,0,0)
-            avalableBoxes.forEach((element) => {
-                listOfMoves.concat(this.findLegalMoves(this.gameBoard[element[3]][element[2]],element[2],element[3]))
-            })
+            for(let i = 0;i<avalableBoxes.length;i++){
+                let element = avalableBoxes[i]
+                let movesInBox = this.findLegalMoves(this.gameBoard[element[3]][element[2]],element[2],element[3])
+                for(let j = 0;j<movesInBox.length;j++){
+                    listOfMoves.push(movesInBox[j])
+                }
+            }
         }
-
-        let i = false
-        while(!i){
-            x2 = Math.floor(Math.random() * 3)
-            y2 = Math.floor(Math.random() * 3)
-            if(this.gameBoard[y1][x1][y2][x2] == undefined)i = true
-        }
+        let bestMove = this.findBestMove(this.gameBoard,this.game.turn,this.boardObject.winningBoxes,listOfMoves,4)
+        x1 = bestMove[1][0]
+        y1 = bestMove[1][1]
+        x2 = bestMove[1][2]
+        y2 = bestMove[1][3]
         console.log(x1,y1,x2,y2)
+        console.log(bestMove[0])
         let gameState = this.game.makeMove(x1,y1,x2,y2,true)
+        this.evaluate()
         return gameState
-        
     }
 }
 exports.Computer = Computer
