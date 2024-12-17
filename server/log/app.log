@@ -60,3 +60,10 @@
 {"level":30,"time":"2024-12-17T21:21:30.553Z","pid":6008,"hostname":"DESKTOP-6KJD4BK","msg":"Created new user with the id 1"}
 {"level":30,"time":"2024-12-17T21:21:37.572Z","pid":6008,"hostname":"DESKTOP-6KJD4BK","msg":"New get request. RequestID = getNewID"}
 {"level":30,"time":"2024-12-17T21:22:16.051Z","pid":6008,"hostname":"DESKTOP-6KJD4BK","msg":"New get request. RequestID = getNewID"}
+{"level":30,"time":"2024-12-17T21:22:22.161Z","pid":7984,"hostname":"DESKTOP-6KJD4BK","msg":"Server started on port 4000"}
+{"level":30,"time":"2024-12-17T21:22:24.406Z","pid":7984,"hostname":"DESKTOP-6KJD4BK","msg":"New get request. RequestID = getNewID"}
+{"level":30,"time":"2024-12-17T21:22:24.407Z","pid":7984,"hostname":"DESKTOP-6KJD4BK","msg":"Created new user with the id 1"}
+{"level":30,"time":"2024-12-17T21:22:26.512Z","pid":7984,"hostname":"DESKTOP-6KJD4BK","msg":"New get request. RequestID = getNewID"}
+{"level":30,"time":"2024-12-17T21:22:26.512Z","pid":7984,"hostname":"DESKTOP-6KJD4BK","msg":"Created new user with the id 2"}
+{"level":30,"time":"2024-12-17T21:22:28.598Z","pid":7984,"hostname":"DESKTOP-6KJD4BK","msg":"New get request. RequestID = getNewID"}
+{"level":30,"time":"2024-12-17T21:22:28.599Z","pid":7984,"hostname":"DESKTOP-6KJD4BK","msg":"Created new user with the id 3"}
