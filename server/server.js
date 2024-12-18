@@ -2,27 +2,40 @@ const fn = require("./functions.js")
 const express = require("express")
 const app = express()
 const logger = require("./logger.js")
-const port = 4000
+const port = 8080
 let users = {
     
 
 }
-app.get("/",(req,res) => {
-    logger.info("New get request. RequestID = "+ req.headers.requestid)
-    switch(req.headers.requestid){
-        case "getNewID":
-            res.send({
-                id:createNewUser()
-            })    
-            break
-        default:
-            logger.warn("Request ID invalid: "+req.headers.requestid)
-            res.sendStatus(418)
-    }
+app.post("/getnewid",(req,res) => {
+    res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+    logger.info("New User request")
+    res.send({
+        id:createNewUser()
+    })    
+})
+app.delete("/deleteinactive",(req,res)=>{
+    
+    deleteInactiveUsers()
+    res.sendStatus(200)
 })
 app.listen(port,()=>{
     logger.info(`Server started on port ${port}`)
 })
+
+
+/**
+ * 
+ * @returns {int} The id of the new user
+ */
+function deleteInactiveUsers(){
+    for(user in users){
+        if(Date.now()-users[user]["time"] > 60000){
+            logger.info(`Deleted user ${users[user]["id"]}`)
+            delete users[user]
+        }
+    }
+}
 function createNewUser(){
     let keys = Object.keys(users)
     let newBoard = new fn.Board(true)
@@ -31,17 +44,21 @@ function createNewUser(){
     let newUserID
     if(keys.length < 1){
         newUserID = 1
-    }else keys.sort()
-    
-    keys.forEach((key,i)=>{
-        if(newUserID)return
-        if(users[key]["id"]-1 > 0 && users[key]["id"]-1 !== users[keys[i-1]]["id"]){
-            newUserID = users[keys[i]]["id"]-1
-        }
+    }else keys.sort((a,b)=>{
+        return parseInt(a)-parseInt(b)
     })
-    if(!newUserID){
-        newUserID = users[keys[keys.length-1]]["id"]+1
+    logger.info(keys)
+    if(keys[0] !== "1"){
+        newUserID = 1
+    }else{
+        keys.forEach((key,i)=>{
+            if(newUserID)return
+            if(parseInt(key)+1 !== parseInt(keys[i+1])){
+                newUserID = parseInt(key)+1
+            }
+        })
     }
+
     
     users[newUserID] = {
         id: newUserID,  
@@ -51,4 +68,5 @@ function createNewUser(){
         time: Date.now()
     }
     logger.info(`Created new user with the id ${newUserID}`)
+    return parseInt(newUserID)
 }

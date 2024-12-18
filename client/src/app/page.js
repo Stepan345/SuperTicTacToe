@@ -1,31 +1,33 @@
 'use client'
 import Image from "next/image";
-import React, {useState} from "react";
-const URL = "localhost:2000"
+import {useState,useEffect} from "react";
+const URL = "http://localhost:8080"
 async function getNewID(){
   try{ 
-    let myHeaders = new Headers({
-      requestID:"getNewID"
-    })
-    const response = await fetch(URL,{
-      method:"GET",
-      headers:myHeaders
-
+    const response = await fetch(URL+"/getnewid",{
+      method:"POST"
     })
     if(!response.ok){
       throw new Error(`Response status: ${response.status}`)
     }
-    return response.json();
+    console.log(response.json())
+    return response.body.id;
   }catch (error){
     console.error(error)
   }
 }
-const [userId,setUserId] = useState(getNewID())
+
 
 export default function Home() {
+  const [userId,setUserId] = useState(-1)
+  useEffect(()=>{
+    setUserId(getNewID())
+    console.log(userId)
+  },[])
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+        <p>{userId}</p>
         <Image
           className="dark:invert"
           src="/next.svg"
