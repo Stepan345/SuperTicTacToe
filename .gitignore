@@ -5,7 +5,7 @@
 /client/node_modules
 /server/log/app.log
 /.pnp
-.pnp.js
+.pnp.j
 
 # testing
 /coverage

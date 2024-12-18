@@ -47,7 +47,6 @@ function createNewUser(){
     }else keys.sort((a,b)=>{
         return parseInt(a)-parseInt(b)
     })
-    logger.info(keys)
     if(keys[0] !== "1"){
         newUserID = 1
     }else{
