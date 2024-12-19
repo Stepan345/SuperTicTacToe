@@ -563,11 +563,12 @@ video {
 }
 
 body {
- background-color: #332C23;
+  background-color: #332C23;
   font-family: Arial, Helvetica, sans-serif;
 }
 
 .square{
+  font-size: x-large;
   height: 40px;
   border-radius: 5px;
   width: 40px;

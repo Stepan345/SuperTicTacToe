@@ -6,7 +6,6 @@ const port = 8080
 const helperBoard = new fn.Board(true)
 let users = {
     
-
 }
 app.post("/getnewid",(req,res) => {
     res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
@@ -21,6 +20,25 @@ app.get("/getnewboard",(req,res) => {
     res.send({
         board:board
     })
+})
+app.get("/getuserboard",(req,res) =>{
+    res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+    let userKeys = Object.keys(users)
+    logger.info(`Re-login request from user ${req.query.userId}`)
+    if(userKeys.length && userKeys.includes(req.query.userId)){
+        res.send({
+            board:users[req.query.userId]["board"].board,
+            active:users[req.query.userId]["game"].nextBox,
+            winningBoxes:users[req.query.userId]["board"].winningBoxes
+        })
+    }else{
+        logger.info("Invalid User")
+        res.send({
+            board:-1,
+            active:-1
+        })
+    }
+    
 })
 app.delete("/deleteinactive",(req,res)=>{
     
@@ -39,7 +57,8 @@ app.post("/broadcastmove",(req,res)=>{
     logger.info(`CPU Move: ${cpuMove}`)
     res.send({
         move:cpuMove,
-        active:users[userId]["game"].nextBox
+        active:users[userId]["game"].nextBox,
+        winningBoxes:users[userId]["board"].winningBoxes
     })
 })
 app.listen(port,()=>{
