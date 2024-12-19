@@ -3,6 +3,7 @@ const express = require("express")
 const app = express()
 const logger = require("./logger.js")
 const port = 8080
+const helperBoard = new fn.Board(true)
 let users = {
     
 
@@ -14,10 +15,32 @@ app.post("/getnewid",(req,res) => {
         id:createNewUser()
     })    
 })
+app.get("/getnewboard",(req,res) => {
+    res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+    let board = helperBoard.createArray(3,3,3,3)
+    res.send({
+        board:board
+    })
+})
 app.delete("/deleteinactive",(req,res)=>{
     
     deleteInactiveUsers()
     res.sendStatus(200)
+})
+app.post("/broadcastmove",(req,res)=>{
+    res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+    logger.info(req.query)
+    let move = [req.query.x1,req.query.y1,req.query.x2,req.query.y2]
+    let userId = (req.query.user).toString()
+    logger.info(`New move recieved from user ${userId} with the move ${move}`)
+    users[userId]["game"].makeMove(move[0],move[1],move[2],move[3])
+    let cpuMove = users[userId]["cpu"].takeTurn()
+    cpuMove[4] = users[userId]["game"].turn 
+    logger.info(`CPU Move: ${cpuMove}`)
+    res.send({
+        move:cpuMove,
+        active:users[userId]["game"].nextBox
+    })
 })
 app.listen(port,()=>{
     logger.info(`Server started on port ${port}`)
@@ -30,7 +53,7 @@ app.listen(port,()=>{
  */
 function deleteInactiveUsers(){
     for(user in users){
-        if(Date.now()-users[user]["time"] > 60000){
+        if(Date.now()-users[user]["time"] > 1800000){
             logger.info(`Deleted user ${users[user]["id"]}`)
             delete users[user]
         }

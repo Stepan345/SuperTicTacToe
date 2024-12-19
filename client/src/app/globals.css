@@ -15,21 +15,46 @@
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+ background-color: #332C23;
   font-family: Arial, Helvetica, sans-serif;
 }
+
 .square{
   height: 40px;
+  border-radius: 5px;
   width: 40px;
-  border-color: blue;
+  margin-right: 1px;
+  margin-left:1px;
+  background-color: #B1DDF1;
+  border-color: #B1DDF1;
   border-width: 1px;
-  margin-right: 2px;
-  margin-bottom: 2px;
+}
+.square:hover{
+  background-color: #6FD1FF;
+  border-color: #6FD1FF;
+}
+.square:disabled{
+  background-color: #9F87AF;
+  border-color: #9F87AF;
 }
 .line{
-  margin-left: 10px;
-  height:42px;
+  height:40px;
+  margin: 1px;
   width: 126px;
   align-items: center;
+  float:right;
+}
+.outerSquare{
+  border-radius: 5px;
+  padding: 4px;
+  border-width: 1px;
+  border-color: #9F87AF;
+  height: 136px;
+  width: 136px;
+  float:right;
+}
+.outerLine{
+  height: 136px;
+  width: 414px;
+  align-content:flex-start;
 }

@@ -380,7 +380,7 @@ class Computer{
         console.log(bestMove[0])
         let gameState = this.game.makeMove(x1,y1,x2,y2,true)
         this.evaluate()
-        return gameState
+        return [parseInt(x1),parseInt(y1),x2,y2]
     }
 }
 exports.Computer = Computer
